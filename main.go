@@ -8,6 +8,7 @@ import (
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Welcome to the Pokedex!")
 	for ;;{
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -16,6 +17,6 @@ func main() {
 		if len(cleaned_text) == 0 {
 			continue
 		}
-		fmt.Printf("Your command was: %v\n", cleaned_text[0])
+		CommandExec(text)
 	}
 }
