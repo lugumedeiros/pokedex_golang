@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"pokedexcligo/internal"
 )
 
 // import "regexp"
@@ -82,14 +83,14 @@ func commandHelp() error {
 }
 
 func commandMapExec(direction string) error {
-	var locations []Location
+	var locations []internal.Location
 	switch direction {
 	case "current":
-		locations = GetLocation()
+		locations = internal.GetLocation()
 	case "next":
-		locations = GetLocationNext()
+		locations = internal.GetLocationNext()
 	case "back":
-		locations = GetLocationBack()
+		locations = internal.GetLocationBack()
 	}
 	if locations == nil {
 		return errors.New("Something went wrong.\n")

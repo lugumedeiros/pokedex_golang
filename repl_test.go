@@ -1,6 +1,7 @@
 package main
 
 import "testing"
+import "pokedexcligo/internal"
 
 // import "fmt"
 
@@ -34,7 +35,7 @@ func TestCleanInput(t *testing.T) {
 }
 
 func TestPokeAPILocationLogic(t *testing.T) {
-	locations := GetLocation()
+	locations := internal.GetLocation()
 	has_passed := true
 	t.Logf("Testing Location API:\n")
 	if locations == nil {
@@ -47,7 +48,7 @@ func TestPokeAPILocationLogic(t *testing.T) {
 		}
 	}
 
-	new_locations := GetLocationNext()
+	new_locations := internal.GetLocationNext()
 	if new_locations == nil {
 		t.Errorf("Test Failed - No location retrieved")
 		has_passed = false
