@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 
@@ -22,12 +23,14 @@ type api_url_config struct {
 	current string
 	previous string
 	next string
+	cache *Cache
 }
 
 var globalConfig = api_url_config {
 	current: "https://pokeapi.co/api/v2/location-area/",
 	previous: "",
 	next: "",
+	cache: NewCache(time.Minute * 10),
 }
 
 func GetLocationNext() []Location{
@@ -42,6 +45,13 @@ func GetLocationBack() []Location{
 
 func GetLocation() []Location{
 	var LocPokeData LocationApiStruct
+	// Get from cache
+	cache_entry, ok := globalConfig.cache.Get(globalConfig.current)
+	if ok {
+		globalConfig.next = cache_entry.next
+		globalConfig.previous = cache_entry.previous
+		return cache_entry.val
+	}
 
 	res, err_get := http.Get(globalConfig.current)
 	if err_get != nil {
@@ -55,5 +65,8 @@ func GetLocation() []Location{
 	}
 	globalConfig.next = LocPokeData.Next
 	globalConfig.previous = LocPokeData.Previous
+
+	// Store in Cache
+	globalConfig.cache.Add("current", LocPokeData.Results, LocPokeData.Next, LocPokeData.Previous)
 	return LocPokeData.Results
 }

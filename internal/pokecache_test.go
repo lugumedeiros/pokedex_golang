@@ -11,20 +11,20 @@ func TestCache(t *testing.T) {
 	t.Logf("Testing PokeCache:\n")
 
 	key := "Key"
-	val := "Value"
+	val := []Location{{Name: "Name", Url: "url.com",}}
 
 	cache := NewCache(time.Second * 5)
-	cache.Add(key, []byte(val))
-	bytes_from_cache, ok := cache.Get(key)
+	cache.Add(key, val, "", "")
+	entry, ok := cache.Get(key)
 	if !ok {
 		t.Errorf("Test Failed, no data found from cache")
 	}
-	if string(bytes_from_cache) != val {
-		t.Errorf("Test Failed, wrong data found from cache - Expected: '%v' - Actual: '%v'", val, string(bytes_from_cache))
+	if entry.val[0].Name != val[0].Name {
+		t.Errorf("Test Failed, wrong data found from cache - Expected: '%v' - Actual: '%v'", val[0].Name, entry.val[0].Name)
 	}
 
 	time.Sleep(time.Second * 6)
-	bytes_from_cache, ok = cache.Get(key)
+	entry, ok = cache.Get(key)
 	if !ok {
 		t.Logf("Test Pass\n")
 	} else {
