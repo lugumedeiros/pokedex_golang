@@ -8,7 +8,7 @@ import (
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("Welcome to the Pokedex!")
+	fmt.Print("Welcome to the Pokedex!\n")
 	for ;;{
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -18,5 +18,6 @@ func main() {
 			continue
 		}
 		CommandExec(text)
+		fmt.Print("\n")
 	}
 }

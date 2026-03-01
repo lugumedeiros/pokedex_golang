@@ -14,7 +14,7 @@ func TestCleanInput(t *testing.T) {
 	case_2 := CaseStruct{input: "   ", expected: []string{}}
 	case_3 := CaseStruct{input: "test a b", expected: []string{"test", "a", "b"}}
 	all_cases := []CaseStruct{case_1, case_2, case_3}
-
+	t.Logf("Testing Input CLI:\n")
 	for i, c := range all_cases {
 		t.Logf("Testing case: %v\n", i+1)
 		actual := cleanInput(c.input)
@@ -29,6 +29,35 @@ func TestCleanInput(t *testing.T) {
 				t.Errorf("Test Failed (STR) - Expected: '%v' - Actual: '%v'\n", c.expected[j], actual[j])
 			}
 		}
+		t.Logf("Test Pass\n")
+	}
+}
+
+func TestPokeAPILocationLogic(t *testing.T) {
+	locations := GetLocation()
+	has_passed := true
+	t.Logf("Testing Location API:\n")
+	if locations == nil {
+		t.Errorf("Test Failed - No location retrieved")
+		has_passed = false
+	} else {
+		if locations[0].Name != "canalave-city-area"{
+			t.Errorf("Test Failed - Expected: '%v' - Actual: '%v'\n", "canalave-city-area", locations[0].Name)
+			has_passed = false
+		}
+	}
+
+	new_locations := GetLocationNext()
+	if new_locations == nil {
+		t.Errorf("Test Failed - No location retrieved")
+		has_passed = false
+	} else {
+		if new_locations[0].Name != "mt-coronet-1f-route-216"{
+			t.Errorf("Test Failed - Expected: '%v' - Actual: '%v'\n", "mt-coronet-1f-route-216", new_locations[0].Name)
+			has_passed = false
+		}
+	}
+	if has_passed {
 		t.Logf("Test Pass\n")
 	}
 }

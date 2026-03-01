@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -27,6 +28,21 @@ func init() {
 			description: "Displays a help message",
 			callback: commandHelp,
 		},
+		"map" : {
+			name: "map",
+			description: "Display map locations",
+			callback: commandMapCurrent,
+		},
+		"mapb" : {
+			name: "mapb",
+			description: "Display previous map locations",
+			callback: commandMapBack,
+		},
+		"mapn" : {
+			name: "mapn",
+			description: "Display next map locations",
+			callback: commandMapNext,
+		},
 	}
 }
 
@@ -46,7 +62,7 @@ func CommandExec(command string) error {
 	if ok {
 		cliCommand.callback()
 	} else {
-		fmt.Printf("Unknown command")
+		fmt.Printf("Unknown command\n")
 	}
 	return nil
 }
@@ -63,4 +79,35 @@ func commandHelp() error {
 		fmt.Printf("%v: %v\n", command_t.name, command_t.description)
 	}
 	return nil
+}
+
+func commandMapExec(direction string) error {
+	var locations []Location
+	switch direction {
+	case "current":
+		locations = GetLocation()
+	case "next":
+		locations = GetLocationNext()
+	case "back":
+		locations = GetLocationBack()
+	}
+	if locations == nil {
+		return errors.New("Something went wrong.\n")
+	}
+	for _, loc := range locations{
+		fmt.Printf("%v\n", loc.Name)
+	}
+	return nil
+}
+
+func commandMapCurrent() error {
+	return commandMapExec("current")
+}
+
+func commandMapNext() error {
+	return commandMapExec("next")
+}
+
+func commandMapBack() error {
+	return commandMapExec("back")
 }
