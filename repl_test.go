@@ -62,3 +62,15 @@ func TestPokeAPILocationLogic(t *testing.T) {
 		t.Logf("Test Pass\n")
 	}
 }
+
+func TestPokeAPIAreaLogic(t *testing.T){
+	t.Logf("Testing Area API:\n")
+	pokemons := internal.GetPokemonInArea("1")
+	if len(pokemons) == 0 {
+		t.Errorf("Test Failed - Failed to catch any pokemon in area 1")
+	}
+	if pokemons[0] != "tentacool" {
+		t.Errorf("Test Failed - Expected: '%v' - Actual: '%v'\n", "tentacool", pokemons[0])
+	}
+	t.Logf("Test Pass\n")
+}

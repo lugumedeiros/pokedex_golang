@@ -17,7 +17,7 @@ func main() {
 		if len(cleaned_text) == 0 {
 			continue
 		}
-		CommandExec(text)
+		CommandExec(cleaned_text[0], cleaned_text[1:])
 		fmt.Print("\n")
 	}
 }

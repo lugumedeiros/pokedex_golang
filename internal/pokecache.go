@@ -1,24 +1,24 @@
 package internal
 
 import (
-	"time"
 	"sync"
+	"time"
 )
 
 type cacheEntry struct {
 	createdAt time.Time
-	val []Location
-	next string
-	previous string
+	val       []Location
+	next      string
+	previous  string
 }
 
 type Cache struct {
-	cache map[string]cacheEntry
+	cache    map[string]cacheEntry
 	interval time.Duration
-	mu sync.Mutex
+	mu       sync.Mutex
 }
 
-func NewCache(interval time.Duration)(*Cache) {
+func NewLocCache(interval time.Duration) *Cache {
 	var new_cache Cache
 	new_cache.cache = make(map[string]cacheEntry)
 	go new_cache.reapLoop(interval)
@@ -48,12 +48,72 @@ func (c *Cache) Get(key string) (cacheEntry, bool) {
 }
 
 func (c *Cache) reapLoop(interval time.Duration) {
-	for ;; {
+	for {
 		time.Sleep(interval)
 		c.mu.Lock()
 		var to_delete []string
 		for key, entry := range c.cache {
-			if time.Since(entry.createdAt) > c.interval{
+			if time.Since(entry.createdAt) > c.interval {
+				to_delete = append(to_delete, key)
+			}
+		}
+		for _, key := range to_delete {
+			delete(c.cache, key)
+		}
+		c.mu.Unlock()
+	}
+}
+
+/////////////////////////////////////////////////////
+
+type PokeCache struct {
+	cache map[string]pokeCacheEntry
+	interval time.Duration
+	mu sync.Mutex
+}
+
+type pokeCacheEntry struct {
+	createdAt time.Time
+	pokemons []string
+}
+
+func NewPokeCache(interval time.Duration) *PokeCache {
+	var new_cache PokeCache
+	new_cache.cache = make(map[string]pokeCacheEntry)
+	new_cache.interval = interval
+	go new_cache.reapLoop(interval)
+	return &new_cache
+}
+
+func (p *PokeCache) Add(location string, pokemons []string){
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	var entry pokeCacheEntry
+	entry.pokemons = pokemons
+	p.cache[location] = entry
+}
+
+func (p *PokeCache) Get(location string) ([]string, bool){
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	entry, ok := p.cache[location]
+	if ok {
+		return entry.pokemons, ok
+	} else {
+		return []string{}, ok
+	}
+	
+}
+
+func (c *PokeCache) reapLoop(interval time.Duration) {
+	for {
+		time.Sleep(interval)
+		c.mu.Lock()
+		var to_delete []string
+		for key, entry := range c.cache {
+			if time.Since(entry.createdAt) > c.interval {
 				to_delete = append(to_delete, key)
 			}
 		}

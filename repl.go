@@ -4,45 +4,52 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"pokedexcligo/internal"
+	"strings"
 )
 
 // import "regexp"
 
 type t_cliCommand struct {
-	name string
+	name        string
 	description string
-	callback func() error
+	callback    func(args []string) error
+	args_n      int
 }
+
 var cliCommandsMap map[string]t_cliCommand
 
 func init() {
 	cliCommandsMap = map[string]t_cliCommand{
-		"exit" : {
-			name: "exit",
+		"exit": {
+			name:        "exit",
 			description: "Exit the Pokedex",
-			callback: commandExit,
+			callback:    commandExit,
 		},
-		"help" : {
-			name: "help",
+		"help": {
+			name:        "help",
 			description: "Displays a help message",
-			callback: commandHelp,
+			callback:    commandHelp,
 		},
-		"map" : {
-			name: "map",
+		"map": {
+			name:        "map",
 			description: "Display map locations",
-			callback: commandMapCurrent,
+			callback:    commandMapCurrent,
 		},
-		"mapb" : {
-			name: "mapb",
+		"mapb": {
+			name:        "mapb",
 			description: "Display previous map locations",
-			callback: commandMapBack,
+			callback:    commandMapBack,
 		},
-		"mapn" : {
-			name: "mapn",
+		"mapn": {
+			name:        "mapn",
 			description: "Display next map locations",
-			callback: commandMapNext,
+			callback:    commandMapNext,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Display all pokemons available in a location",
+			callback:    commandPokemonArea,
 		},
 	}
 }
@@ -58,23 +65,23 @@ func cleanInput(text string) []string {
 	return new_slice
 }
 
-func CommandExec(command string) error {
+func CommandExec(command string, args []string) error {
 	cliCommand, ok := cliCommandsMap[command]
 	if ok {
-		cliCommand.callback()
+		cliCommand.callback(args)
 	} else {
 		fmt.Printf("Unknown command\n")
 	}
 	return nil
 }
 
-func commandExit() error {
+func commandExit(args []string) error {
 	fmt.Printf("Closing the Pokedex... Goodbye!\n")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp() error {
+func commandHelp(args []string) error {
 	fmt.Printf("Usage:\n\n")
 	for _, command_t := range cliCommandsMap {
 		fmt.Printf("%v: %v\n", command_t.name, command_t.description)
@@ -95,20 +102,37 @@ func commandMapExec(direction string) error {
 	if locations == nil {
 		return errors.New("Something went wrong.\n")
 	}
-	for _, loc := range locations{
+	for _, loc := range locations {
 		fmt.Printf("%v\n", loc.Name)
 	}
 	return nil
 }
 
-func commandMapCurrent() error {
+func commandMapCurrent(args []string) error {
 	return commandMapExec("current")
 }
 
-func commandMapNext() error {
+func commandMapNext(args []string) error {
 	return commandMapExec("next")
 }
 
-func commandMapBack() error {
+func commandMapBack(args []string) error {
 	return commandMapExec("back")
+}
+
+func commandPokemonArea(args []string) error {
+	if len(args) < 1 {
+		return errors.New("missing Location Area")
+	}
+	area := args[0]
+	pokemons := internal.GetPokemonInArea(area)
+	if len(pokemons) == 0 {
+		fmt.Printf("No pokemon found in area or area doesn't exist.\n")
+	} else {
+		fmt.Printf("Found Pokemon:\n")
+		for _, name := range pokemons {
+			fmt.Printf("- %v\n", name)
+		}	
+	}
+	return nil
 }
