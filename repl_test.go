@@ -67,10 +67,34 @@ func TestPokeAPIAreaLogic(t *testing.T){
 	t.Logf("Testing Area API:\n")
 	pokemons := internal.GetPokemonInArea("1")
 	if len(pokemons) == 0 {
-		t.Errorf("Test Failed - Failed to catch any pokemon in area 1")
+		t.Errorf("Test Failed - Failed to find any pokemon in area 1")
 	}
 	if pokemons[0] != "tentacool" {
 		t.Errorf("Test Failed - Expected: '%v' - Actual: '%v'\n", "tentacool", pokemons[0])
 	}
 	t.Logf("Test Pass\n")
+}
+
+func TestPokeCatchLogic(t *testing.T){
+	t.Logf("Testing Catch API:\n")
+	pokemon_name := "pikachu"
+	success, err := internal.GetPokemon(pokemon_name)
+	if err {
+		t.Errorf("Error happened in the API")
+	}
+	if success {
+		t.Errorf("Expected to fail, but pikachu was caught")
+	}
+	for i:=0; i < 20; i++ {
+		success, err = internal.GetPokemon(pokemon_name)
+		
+		if err {
+			t.Errorf("Error happened in the API")
+		}
+		if success {
+			t.Logf("Test Pass\n")
+			return
+		}
+	}
+	t.Errorf("Expected to succes, but pikachu was not caught")
 }

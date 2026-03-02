@@ -51,6 +51,11 @@ func init() {
 			description: "Display all pokemons available in a location",
 			callback:    commandPokemonArea,
 		},
+		"catch": {
+			name: "catch",
+			description: "Try to catch a pokemon",
+			callback: commandCatch,
+		},
 	}
 }
 
@@ -133,6 +138,25 @@ func commandPokemonArea(args []string) error {
 		for _, name := range pokemons {
 			fmt.Printf("- %v\n", name)
 		}	
+	}
+	return nil
+}
+
+func commandCatch(args []string) error {
+	if len(args) < 1 {
+		return errors.New("Missing Pokemon name.")
+	}
+	pokemon_name := strings.ToLower(args[0])
+	fmt.Printf("Throwing a Pokeball at %v...\n", pokemon_name)
+	success, err := internal.GetPokemon(pokemon_name)
+	if err {
+		return errors.New("Something went wrong.")
+	} else {
+		if success {
+			fmt.Printf("%v was caught!\n", pokemon_name)
+		} else {
+			fmt.Printf("%v escaped!\n", pokemon_name)
+		}
 	}
 	return nil
 }
