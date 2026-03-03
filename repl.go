@@ -52,14 +52,19 @@ func init() {
 			callback:    commandPokemonArea,
 		},
 		"catch": {
-			name: "catch",
+			name:        "catch",
 			description: "Try to catch a pokemon",
-			callback: commandCatch,
+			callback:    commandCatch,
 		},
 		"inspect": {
-			name: "inspect",
+			name:        "inspect",
 			description: "Inspect pokemons added to pokedex",
-			callback: commandInspect,
+			callback:    commandInspect,
+		},
+		"pokedex" : {
+			name: "pokedex",
+			description: "Display all pokemons added to pokedex",
+			callback: commandPokedex,
 		},
 	}
 }
@@ -142,7 +147,7 @@ func commandPokemonArea(args []string) error {
 		fmt.Printf("Found Pokemon:\n")
 		for _, name := range pokemons {
 			fmt.Printf("- %v\n", name)
-		}	
+		}
 	}
 	return nil
 }
@@ -186,4 +191,17 @@ func commandInspect(args []string) error {
 		return nil
 	}
 	return errors.New("you have not caught that pokemon")
+}
+
+func commandPokedex(args []string) error {
+	pokemons := internal.GetCaughPokemon()
+	if len(pokemons) == 0 {
+		fmt.Printf("Your Pokedex is empty!\n")
+	} else {
+		fmt.Printf("Your Pokedex:\n")
+		for _, name := range pokemons {
+			fmt.Printf(" - %v\n", name)
+		}
+	}
+	return nil
 }

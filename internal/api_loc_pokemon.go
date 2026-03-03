@@ -489,3 +489,11 @@ func GetPokemonFromPokedex(name string) (stat PokemonStruct, ok bool) {
 	stat, ok = globalConfig.pokedex[name]
 	return stat, ok
 }
+
+func GetCaughPokemon() []string {
+	var pokemons []string
+	for key, _ := range globalConfig.pokedex {
+		pokemons = append(pokemons, key)
+	}
+	return pokemons
+}
