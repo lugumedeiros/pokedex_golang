@@ -80,21 +80,30 @@ func TestPokeCatchLogic(t *testing.T){
 	pokemon_name := "pikachu"
 	success, err := internal.GetPokemon(pokemon_name)
 	if err {
-		t.Errorf("Error happened in the API")
+		t.Errorf("Test Failed - Error happened in the API")
 	}
 	if success {
-		t.Errorf("Expected to fail, but pikachu was caught")
+		t.Errorf("Test Failed - Expected to fail, but pikachu was caught")
 	}
+	has_success := false
 	for i:=0; i < 20; i++ {
 		success, err = internal.GetPokemon(pokemon_name)
 		
 		if err {
-			t.Errorf("Error happened in the API")
+			t.Errorf("Test Failed - Error happened in the API")
 		}
 		if success {
-			t.Logf("Test Pass\n")
-			return
+			has_success = true
+			break
 		}
 	}
-	t.Errorf("Expected to succes, but pikachu was not caught")
+	if !has_success {
+		t.Errorf("Test Failed - Expected to succes, but pikachu was not caught")
+		return
+	}
+	if _, ok := internal.GetPokemonFromPokedex("pikachu"); ok {
+		t.Logf("Test Pass\n")
+	} else {
+		t.Errorf("Test Failed - No stat available for caught pokemon")
+	}
 }

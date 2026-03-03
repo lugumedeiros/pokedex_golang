@@ -374,7 +374,7 @@ type api_url_config struct {
 	next      string
 	cache     *Cache
 	pokeCache *PokeCache
-	pokedex map[string]bool
+	pokedex map[string]PokemonStruct
 	xp int
 }
 
@@ -384,7 +384,7 @@ var globalConfig = api_url_config{
 	next:      "",
 	cache:     NewLocCache(time.Minute * 10),
 	pokeCache: NewPokeCache(time.Minute * 10),
-	pokedex: make(map[string]bool),
+	pokedex: make(map[string]PokemonStruct),
 	xp: 20,
 }
 
@@ -478,9 +478,14 @@ func GetPokemon(name string) (success bool, err bool) {
 	chance := getCatchChance(float64(globalConfig.xp), float64(pokemon.BaseExperience))
 	success = rand.Float64() < chance
 	if success {
-		globalConfig.pokedex[pokemon.Name] = true
+		globalConfig.pokedex[pokemon.Name] = pokemon
 	} else {
 		globalConfig.xp += pokemon.BaseExperience / 10 // this is cheating :D
 	}
 	return success, false
+}
+
+func GetPokemonFromPokedex(name string) (stat PokemonStruct, ok bool) {
+	stat, ok = globalConfig.pokedex[name]
+	return stat, ok
 }

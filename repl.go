@@ -56,6 +56,11 @@ func init() {
 			description: "Try to catch a pokemon",
 			callback: commandCatch,
 		},
+		"inspect": {
+			name: "inspect",
+			description: "Inspect pokemons added to pokedex",
+			callback: commandInspect,
+		},
 	}
 }
 
@@ -159,4 +164,26 @@ func commandCatch(args []string) error {
 		}
 	}
 	return nil
+}
+
+func commandInspect(args []string) error {
+	if len(args) < 1 {
+		return errors.New("Missing Pokemon name.")
+	}
+	if stat, ok := internal.GetPokemonFromPokedex(args[0]); ok {
+		// print stats
+		fmt.Printf("Name: %v\n", stat.Name)
+		fmt.Printf("Height: %v\n", stat.Height)
+		fmt.Printf("Weight: %v\n", stat.Weight)
+		fmt.Printf("Stats:\n")
+		for _, unique_stat := range stat.Stats {
+			fmt.Printf("  -%v: %v\n", unique_stat.Stat.Name, unique_stat.BaseStat)
+		}
+		fmt.Printf("Types:\n")
+		for _, types := range stat.Types {
+			fmt.Printf("  - %v\n", types.Type.Name)
+		}
+		return nil
+	}
+	return errors.New("you have not caught that pokemon")
 }
